@@ -1,0 +1,18 @@
+FirstName: Alessio
+LastName: Tonelli
+MatriculationNumber: 201732
+AcademicYear: 2020-2021
+GitHubUrl: https://github.com/AlessioTonelli/dncs-lab
+Subnets:
+  HostsA:
+    RequiredAddresses: 214
+    SubnetAddress: 172.16.5.0
+    SubnetPrefixLength: 24
+  HostsB:
+    RequiredAddresses: 270
+    SubnetAddress: 172.16.0.0
+    SubnetPrefixLength: 23
+  Hub:
+    RequiredAddresses: 348
+    SubnetAddress: 172.16.3.0
+    SubnetPrefixLength: 23
