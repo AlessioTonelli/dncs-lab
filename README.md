@@ -208,7 +208,7 @@ sudo ip route add 192.168.2.0/23 via 10.1.1.1
 ```
 
 ## Host-a
-Nel file `host-a.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione una tale rete venga invitato all'inidirizzo corretto del router della rete. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host.
+Nel file `host-a.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione un host di un'altra rete venga invitato all'indirizzo corretto del router. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host.
 ```
 export DEBIAN_FRONTEND=noninteractive
 # Startup commands go here
@@ -218,3 +218,35 @@ sudo ip route add 10.1.1.0/30 via 192.168.4.1
 sudo ip route add 192.168.0.0/23 via 192.168.4.1
 sudo ip route add 192.168.2.0/23 via 192.168.4.1
 ```
+## Host-b
+Nel file `host-b.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione un host di un'altra rete venga invitato all'indirizzo corretto del router. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host.
+```
+export DEBIAN_FRONTEND=noninteractive
+# Startup commands go here
+sudo ip addr add 192.168.2.2/23 dev enp0s8
+sudo ip link set dev enp0s8 up
+sudo ip route add 10.1.1.0/30 via 192.168.2.1
+sudo ip route add 192.168.0.0/23 via 192.168.2.1
+sudo ip route add 192.168.4.0/24 via 192.168.2.1
+```
+## Host-c
+Nel file `host-c.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione un host di un'altra rete venga invitato all'indirizzo corretto del router. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host. Inoltre su questo host abbiamo aggiunto anche i comandi per installare ed attivare `docker.io` con il relativo `dustnic82/nginx-test`.
+```
+export DEBIAN_FRONTEND=noninteractive
+# Startup commands go here
+#Network interface config
+sudo ip add add 192.168.0.2/23 dev enp0s8
+sudo ip link set dev enp0s8 up
+sudo ip route add 10.1.1.0/30 via 192.168.0.1
+sudo ip route add 192.168.4.0/24 via 192.168.0.1
+sudo ip route add 192.168.2.0/23 via 192.168.0.1
+#Download package information from all configured sources
+sudo apt-get update
+#Install and run Docker.io
+sudo apt -y install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo docker pull dustnic82/nginx-test
+sudo docker run --name nginx -p 80:80 -d dustnic82/nginx-test
+```
+## Risultato finale
