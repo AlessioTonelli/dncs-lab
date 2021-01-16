@@ -117,5 +117,10 @@ The assignment deliverable consists of a Github repository containing:
 
 
 # Design
- . 214 for host A
- . 
+- 214 indirizzi per host-A
+- 270 indirizzi per host-B
+- 348 indirizzi per host-C
+- L'host-c deve essere in grado anche di far andare una docker image (dustnic82/nginx-test) la quale implementa un web-server che deve essere raggiungibile 
+  dall'host-a e dall'host-b
+- Non devono essere usate rotte dinamiche
+- I Router devono essere più generici possibili
