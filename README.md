@@ -157,6 +157,7 @@ vb.memory = 512
 # Configurazione dispositivi
 
 ## Switch
+Nel file `switch.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte dello switch per i vari collegamenti, come ad esempio l'aggiunta della porta broadcast che collega tale dispositivo al router-1. Inoltre dobbiamo aggiungere le due porte per collegare le rispettive reti degli host-a e host-b. Il comando `sudo ip link set dev ...` farà si che tali porte siano attive nel momento in cui andremo ad effettuare il comando `vagrant up`.
 ```
 export DEBIAN_FRONTEND=noninteractive
 
@@ -172,4 +173,23 @@ sudo ip link set dev enp0s8 up
 sudo ip link set dev enp0s9 up
 sudo ip link set dev enp0s10 up
 ```
+## Router-1
+Nel file `router-1.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte del router per i vari collegamenti con i rispettivi indirizzi ip. Inoltre dobbiamo far si che la porta che collega il router con le due reti sottostanti sia divisa in due parti per gestire entrambi i traffici con due indirizzi broadcast diversi, rispettivamente uno per la rete collegata all'host-a e l'altro per il collegamento con la rete dell'host-b. 
+Il comando `sudo ip link set dev ...` farà si che tali porte siano attive nel momento in cui andremo ad effettuare il comando `vagrant up`.
+```
+export DEBIAN_FRONTEND=noninteractive
+#Startup commands go here
+#Enable routing
+sudo sysctl -w net.ipv4.ip_forward=1
+#Network and VLAN interface config
+sudo ip addr add 10.1.1.1/30 dev enp0s9
+sudo ip link set dev enp0s9 up
+sudo ip link add link enp0s8 name enp0s8.2 type vlan id 2
+sudo ip link add link enp0s8 name enp0s8.3 type vlan id 3
+sudo ip addr add 192.168.4.1/24 dev enp0s8.2
+sudo ip addr add 192.168.2.1/23 dev enp0s8.3
+sudo ip link set dev enp0s8 up
+sudo ip route add 192.168.0.0/23 via 10.1.1.2
+```
 
+## Router-2
