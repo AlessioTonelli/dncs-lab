@@ -128,3 +128,8 @@ The assignment deliverable consists of a Github repository containing:
 ## Schema della rete
 ![Image](rete.png)
 
+## Subnetting
+- Per la rete riguardante l'host-c dobbiamo gestire un numero di host pari a 348, per questo abbiamo bisogno di una indirizzo di rete che sia un \23 in quanto riesce a gestire un numero di host pari a (2^9)-2 = 510 indirizzi. In questo caso attribuiremo la rete 192.168.0.0\23.
+- Per la rete riguardante l'host-b dobbiamo gestire un numero di host pari a 270, per questo abbiamo bisogno di una indirizzo di rete che sia un \23 in quanto riesce a gestire un numero di host pari a (2^9)-2 = 510 indirizzi. In questo caso attribuiremo la rete 192.168.2.0\23.
+- Per la rete riguardante l'host-a dobbiamo gestire un numero di host pari a 214, per questo abbiamo bisogno di una indirizzo di rete che sia un \24 in quanto riesce a gestire un numero di host pari a (2^8)-2 = 254 indirizzi. In questo caso attribuiremo la rete 192.168.4.0\24.
+- Per la rete tra i due router usiamo una \30 in quanto si riescono a gestire (2^2)-2 = 2 indirizzi.
