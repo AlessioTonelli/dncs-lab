@@ -115,7 +115,6 @@ The assignment deliverable consists of a Github repository containing:
 - https://www.cyberciti.biz/faq/howto-linux-configuring-default-route-with-ipcommand/
 - https://www.vagrantup.com/intro/getting-started/
 
-
 # Design
 - 214 indirizzi per host-A
 - 270 indirizzi per host-B
@@ -146,12 +145,31 @@ Router-1       192.168.2.1\23        enp0s8.3
 Host-a         192.168.4.2\24        enp0s8
 Host-b         192.168.2.2\23        enp0s8
 ```
-## Vagrant File
+## File vagrant
 Una volta aperto il vagrant file la prima cosa da modificare è il "path" di ogni componente come ad esempio: 
 ```
 router1.vm.provision "shell", path: "router-1.sh"
 ```
-Inoltre nell'host-c va aumentata la memoria del dispositivo facendola passare da 256 a 512 per poter far gigare la docker-image
+Inoltre nell'host-c va aumentata la memoria del dispositivo facendola passare da 256 MB a 512 MB per poter far gigare la docker-image:
 ```
 vb.memory = 512
 ```
+# Configurazione dispositivi
+
+## Switch
+```
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get install -y tcpdump
+apt-get install -y openvswitch-common openvswitch-switch apt-transport-https ca-certificates curl software-properties-common
+#Startup commands for switch go here
+sudo ovs-vsctl add-br switch
+sudo ovs-vsctl add-port switch enp0s8
+sudo ovs-vsctl add-port switch enp0s9 tag="2"
+sudo ovs-vsctl add-port switch enp0s10 tag="3"
+sudo ip link set dev enp0s8 up
+sudo ip link set dev enp0s9 up
+sudo ip link set dev enp0s10 up
+```
+
