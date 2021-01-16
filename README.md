@@ -147,3 +147,11 @@ Host-a         192.168.4.2\24        enp0s8
 Host-b         192.168.2.2\23        enp0s8
 ```
 ## Vagrant File
+Una volta aperto il vagrant file la prima cosa da modificare è il "path" di ogni componente come ad esempio: 
+```
+router1.vm.provision "shell", path: "router-1.sh"
+```
+Inoltre nell'host-c va aumentata la memoria del dispositivo facendola passare da 256 a 512 per poter far gigare la docker-image
+```
+vb.memory = 512
+```
