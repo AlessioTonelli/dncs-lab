@@ -123,4 +123,4 @@ The assignment deliverable consists of a Github repository containing:
 - L'host-c deve essere in grado anche di far andare una docker image (dustnic82/nginx-test) la quale implementa un web-server che deve essere raggiungibile 
   dall'host-a e dall'host-b
 - Non devono essere usate rotte dinamiche
-- I Router devono essere più generici possibili
+- I router devono essere più generici possibili
