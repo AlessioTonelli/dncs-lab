@@ -136,6 +136,7 @@ The assignment deliverable consists of a Github repository containing:
 
 ## Configurazione IP
 Essendo che abbiamo due reti attaccate allo stesso switch dobbiamo far si che tale switch riesca a gestire entrabe le reti tramite delle VLANs e dobbiamo creare due porte nel router-1 che funzionino ognuna da broadcast, rispettivamente per ogni rete connessa ad esso. La porta dello switch che si collega con il router-1 sarà una trunk-port, essa riuscirà a gestire il traffico delle VLANs e indirizzare i pacchetti verso il router.
+```
 `Router-1       10.1.1.1\30           enp0s9`
 `Router-2       10.1.1.2\30           enp0s9`
 `Router-2       192.168.0.1\23        enp0s8`
@@ -144,5 +145,5 @@ Essendo che abbiamo due reti attaccate allo stesso switch dobbiamo far si che ta
 `Router-1       192.168.2.1\23        enp0s8.3`
 `Host-a         192.168.4.2\24        enp0s8`
 `Host-b         192.168.2.2\23        enp0s8`
-
+```
 ## Vagrant File
