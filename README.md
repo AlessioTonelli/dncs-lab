@@ -126,4 +126,4 @@ The assignment deliverable consists of a Github repository containing:
 - I router devono essere più generici possibili
 
 ## Schema della rete
-![image] (rete.png)
+
