@@ -133,3 +133,16 @@ The assignment deliverable consists of a Github repository containing:
 - Per la rete riguardante l'host-b dobbiamo gestire un numero di host pari a 270, per questo abbiamo bisogno di una indirizzo di rete che sia un \23 in quanto riesce a gestire un numero di host pari a (2^9)-2 = 510 indirizzi. In questo caso attribuiremo la rete 192.168.2.0\23.
 - Per la rete riguardante l'host-a dobbiamo gestire un numero di host pari a 214, per questo abbiamo bisogno di una indirizzo di rete che sia un \24 in quanto riesce a gestire un numero di host pari a (2^8)-2 = 254 indirizzi. In questo caso attribuiremo la rete 192.168.4.0\24.
 - Per la rete tra i due router usiamo una \30 in quanto si riescono a gestire (2^2)-2 = 2 indirizzi.
+
+## Configurazione IP
+Essendo che abbiamo due reti attaccate allo stesso switch dobbiamo far si che tale switch riesca a gestire entrabe le reti tramite delle VLANs e dobbiamo creare due porte nel router-1 che funzionino ognuna da broadcast, rispettivamente per ogni rete connessa ad esso. La porta dello switch che si collega con il router-1 sarà una trunk-port, essa riuscirà a gestire il traffico delle VLANs e indirizzare i pacchetti verso il router.
+`Router-1       10.1.1.1\30           enp0s9`
+`Router-2       10.1.1.2\30           enp0s9`
+`Router-2       192.168.0.1\23        enp0s8`
+`Host-c         192.168.0.2\23        enp0s8`
+`Router-1       192.168.4.1\24        enp0s8.2`
+`Router-1       192.168.2.1\23        enp0s8.3`
+`Host-a         192.168.4.2\24        enp0s8`
+`Host-b         192.168.2.2\23        enp0s8`
+
+## Vagrant File
