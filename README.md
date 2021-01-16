@@ -174,7 +174,7 @@ sudo ip link set dev enp0s9 up
 sudo ip link set dev enp0s10 up
 ```
 ## Router-1
-Nel file `router-1.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte del router per i vari collegamenti con i rispettivi indirizzi ip. Inoltre dobbiamo far si che la porta che collega il router con le due reti sottostanti sia divisa in due parti per gestire entrambi i traffici con due indirizzi broadcast diversi, rispettivamente uno per la rete collegata all'host-a e l'altro per il collegamento con la rete dell'host-b. 
+Nel file `router-1.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte del router per i vari collegamenti con i rispettivi indirizzi ip. Inoltre dobbiamo far si che la porta che collega il router con le due reti sottostanti sia divisa in due parti per gestire entrambi i traffici con due indirizzi broadcast diversi, rispettivamente uno per la rete collegata all'host-a e l'altro per il collegamento con la rete dell'host-b. Per fare tutto ciò utilizzeremo i seguenti comandi: `sudo ip link add link enp0s8 name enp0s8.2 type vlan id 2`, `sudo ip link add link enp0s8 name enp0s8.3 type vlan id 3`.
 Il comando `sudo ip link set dev ...` farà si che tali porte siano attive nel momento in cui andremo ad effettuare il comando `vagrant up`.
 ```
 export DEBIAN_FRONTEND=noninteractive
