@@ -206,3 +206,15 @@ sudo ip link set dev enp0s8 up
 sudo ip route add 192.168.4.0/24 via 10.1.1.1
 sudo ip route add 192.168.2.0/23 via 10.1.1.1
 ```
+
+## Host-a
+Nel file `host-a.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione una tale rete venga invitato all'inidirizzo corretto del router della rete. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host.
+```
+export DEBIAN_FRONTEND=noninteractive
+# Startup commands go here
+sudo ip addr add 192.168.4.2/24 dev enp0s8
+sudo ip link set dev enp0s8 up
+sudo ip route add 10.1.1.0/30 via 192.168.4.1
+sudo ip route add 192.168.0.0/23 via 192.168.4.1
+sudo ip route add 192.168.2.0/23 via 192.168.4.1
+```
