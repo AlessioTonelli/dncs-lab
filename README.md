@@ -126,5 +126,3 @@ The assignment deliverable consists of a Github repository containing:
 - I router devono essere più generici possibili
 
 ## Schema della rete
-
-- 214 indirizzi per host-A
