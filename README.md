@@ -124,3 +124,5 @@ The assignment deliverable consists of a Github repository containing:
   dall'host-a e dall'host-b
 - Non devono essere usate rotte dinamiche
 - I router devono essere più generici possibili
+
+## Schema della rete
