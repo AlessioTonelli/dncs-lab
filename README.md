@@ -119,7 +119,7 @@ The assignment deliverable consists of a Github repository containing:
 - 214 addresses for host-A
 - 270 addresses for host-B
 - 348 addresses for host-C
-- Host-c must run a docker image (dustnic82/nginx-test) this one must be reachable by host-a or host-b
+- Host-c must run a docker image (dustnic82/nginx-test) this one must be reachable by host-a and host-b
 - No dynamic routing can be used
 - Routes must be as generic as possible
 
@@ -127,13 +127,13 @@ The assignment deliverable consists of a Github repository containing:
 ![Image](rete.png)
 
 ## Subnetting
-- For the network of host-c I have to manage 348 addresses, for this reason I choosen a network mask \23 because it can manage a number of addresses equal to (2^9)-2 = 510. In this case I choosen the subnet 192.168.0.0\23.
-- For the network of host-b I have to manage 270 addresses, for this reason I choosen a network mask \23 because it can manage a number of addresses equal to (2^9)-2 = 510. In this case I choosen the subnet 192.168.2.0\23.
-- For the network of host-c I have to manage 214 addresses, for this reason I choosen a network mask \24 because it can manage a number of addresses equal to (2^8)-2 = 214. In this case I choosen the subnet 192.168.4.0\23.
+- For the network of host-c I have to manage 348 addresses, for this reason I choosen \23 because it can manage a number of addresses equal to (2^9)-2 = 510. In this case I choosen the subnet 192.168.0.0\23.
+- For the network of host-b I have to manage 270 addresses, for this reason I choosen \23 because it can manage a number of addresses equal to (2^9)-2 = 510. In this case I choosen the subnet 192.168.2.0\23.
+- For the network of host-a I have to manage 214 addresses, for this reason I choosen \24 because it can manage a number of addresses equal to (2^8)-2 = 214. In this case I choosen the subnet 192.168.4.0\23.
 - For the network between the two routers I choosen \30 beacuse it can manage a number of addresses equal to (2^2)-2 = 2.
 
 ## IP configuration
-Since I have two networks attached to the same switch, we must ensure that this switch is able to manage both networks through VLANs and I must create two ports in the router-1 that each work as a broadcast, respectively for each network connected to it. The switch port that is connects with the router-1 will be a trunk-port, it will be able to manage the traffic of the VLANs and direct the packets to the router.
+Since I have two networks attached to the same switch, I must ensure that this switch is able to manage both networks through VLANs and I must create two ports in the router-1 that each work as a gateway, respectively for each network connected to it. The switch port that is connects with the router-1 will be a trunk-port, it will be able to manage the traffic of the VLANs and direct the packets to the router.
 ```
 Router-1       10.1.1.1\30           enp0s9
 Router-2       10.1.1.2\30           enp0s9
@@ -156,7 +156,7 @@ vb.memory = 512
 # Devices configuration
 
 ## Switch
-In the file `switch.sh` I have to insert lines of code to make sure that the switch ports are added for the different connections, such as adding the broadcast port that connects this device to the router-1. We also need to add the two ports to connect the respective networks of host-a and host-b. The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command.
+In the file `switch.sh` I have to insert lines of code to make sure that the switch ports are added for the different connections, such as adding the broadcast port that connects this device to the router-1. I also need to add the two ports to connect the respective networks of host-a and host-b. The command `sudo ip link set dev ...` will active these ports when I run the `vagrant up` command.
 ```
 export DEBIAN_FRONTEND=noninteractive
 
@@ -173,8 +173,8 @@ sudo ip link set dev enp0s9 up
 sudo ip link set dev enp0s10 up
 ```
 ## Router-1
-In the file `router-1.sh` I have to insert some lines of code to make sure that the router ports are added for the different connections with their respective ip addresses. Furthermore, we must ensure that the port that connects the router with the two underlying networks is divided into two parts to manage both traffic with two different gateway addresses, respectively one for the network connected to host-a and the other for the connection with the host-b. To do this we will use the following commands: `sudo ip link add link enp0s8 name enp0s8.2 type vlan id 2`,` sudo ip link add link enp0s8 name enp0s8.3 type vlan id 3`.
-The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command. Finally we need to create the static route to be able to reach host-c from host-a and host-b, the command is the following: `sudo ip route add 192.168.0.0/23 via 10.1.1.2` .
+In the file `router-1.sh` I have to insert some lines of code to make sure that the router ports are added for the different connections with their respective ip addresses. Furthermore, I must ensure that the port that connects the router with the two underlying networks is divided into two parts to manage both traffic with two different gateway addresses, respectively one for the network connected to host-a and the other for the connection with the host-b. To do this I will use the following commands: `sudo ip link add link enp0s8 name enp0s8.2 type vlan id 2`,` sudo ip link add link enp0s8 name enp0s8.3 type vlan id 3`.
+The command `sudo ip link set dev ...` will active these ports when I run the `vagrant up` command. Finally I need to create the static route to be able to reach host-c from host-a and host-b, the command is the following: `sudo ip route add 192.168.0.0/23 via 10.1.1.2` .
 ```
 export DEBIAN_FRONTEND=noninteractive
 #Startup commands go here
@@ -192,7 +192,7 @@ sudo ip route add 192.168.0.0/23 via 10.1.1.2
 ```
 
 ## Router-2
-In the file `router-2.sh` I have to insert some lines of code to add the router ports for the different connections with their respective ip addresses. The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command. Finally we need to create the static route to be able to reach host-a and host-b from host-c, the commands are as follows: `sudo ip route add 192.168.4.0/24 via 10.1.1.1` , `sudo ip route add 192.168.2.0/23 through 10.1.1.1`.
+In the file `router-2.sh` I have to insert some lines of code to add the router ports for the different connections with their respective ip addresses. The command `sudo ip link set dev ...` will active these ports when I run the `vagrant up` command. Finally I need to create the static route to be able to reach host-a and host-b from host-c, the commands are as follows: `sudo ip route add 192.168.4.0/24 via 10.1.1.1` , `sudo ip route add 192.168.2.0/23 through 10.1.1.1`.
 ```
 export DEBIAN_FRONTEND=noninteractive
 #Startup commands go here
@@ -229,7 +229,7 @@ sudo ip route add 192.168.0.0/23 via 192.168.2.1
 sudo ip route add 192.168.4.0/24 via 192.168.2.1
 ```
 ## Host-c
-In the file `host-c.sh` I have to insert the commands to be able to insert the IP, to activate the port connected to the switch and finally to introduce the commands for the static routes, so that the packet targeting another network is sent to the correct router address. The command for this last operation is the following: `sudo ip route add [networkaddress\length] via [routeraddress]`, to be repeated for each network not directly connected to that host. Also on this host we have also added commands to install and run `docker.io` with the related `dustnic82 / nginx-test`.
+In the file `host-c.sh` I have to insert the commands to be able to insert the IP, to activate the port connected to the switch and finally to introduce the commands for the static routes, so that the packet targeting another network is sent to the correct router address. The command for this last operation is the following: `sudo ip route add [networkaddress\length] via [routeraddress]`, to be repeated for each network not directly connected to that host. Also on this host I have also added commands to install and run `docker.io` with the related `dustnic82 / nginx-test`.
 ```
 export DEBIAN_FRONTEND=noninteractive
 # Startup commands go here
