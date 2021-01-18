@@ -153,7 +153,7 @@ Also in the host-c the memory of the device must be increased by passing it from
 ```
 vb.memory = 512
 ```
-# Device configuration
+# Devices configuration
 
 ## Switch
 In the file `switch.sh` I have to insert lines of code to make sure that the switch ports are added for the different connections, such as adding the broadcast port that connects this device to the router-1. We also need to add the two ports to connect the respective networks of host-a and host-b. The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command.
@@ -248,7 +248,7 @@ sudo systemctl enable docker
 sudo docker pull dustnic82/nginx-test
 sudo docker run --name nginx -p 80:80 -d dustnic82/nginx-test
 ```
-## Risultato finale
+## Conclusion
 To see if this works, I need to log into each host with the command `vagrant ssh [hostname]` and try to ping the other hosts with the command `ping [hostaddress]`. Finally I entered into host-a or host-b, I used the command `curl 192.168.0.2` and this was the output:
 ```
 <!DOCTYPE html>
