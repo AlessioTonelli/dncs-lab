@@ -116,25 +116,24 @@ The assignment deliverable consists of a Github repository containing:
 - https://www.vagrantup.com/intro/getting-started/
 
 # Design
-- 214 indirizzi per host-A
-- 270 indirizzi per host-B
-- 348 indirizzi per host-C
-- L'host-c deve essere in grado anche di far andare una docker image (dustnic82/nginx-test) la quale implementa un web-server che deve essere raggiungibile 
-  dall'host-a e dall'host-b
-- Non devono essere usate rotte dinamiche
-- I router devono essere più generici possibili
+- 214 addresses for host-A
+- 270 addresses for host-B
+- 348 addresses for host-C
+- Host-c must run a docker image (dustnic82/nginx-test) this one must be reachable by host-a or host-b
+- No dynamic routing can be used
+- Routes must be as generic as possible
 
-## Schema della rete
+## Network image
 ![Image](rete.png)
 
 ## Subnetting
-- Per la rete riguardante l'host-c dobbiamo gestire un numero di host pari a 348, per questo abbiamo bisogno di una indirizzo di rete che sia un \23 in quanto riesce a gestire un numero di host pari a (2^9)-2 = 510 indirizzi. In questo caso attribuiremo la rete 192.168.0.0\23.
-- Per la rete riguardante l'host-b dobbiamo gestire un numero di host pari a 270, per questo abbiamo bisogno di una indirizzo di rete che sia un \23 in quanto riesce a gestire un numero di host pari a (2^9)-2 = 510 indirizzi. In questo caso attribuiremo la rete 192.168.2.0\23.
-- Per la rete riguardante l'host-a dobbiamo gestire un numero di host pari a 214, per questo abbiamo bisogno di una indirizzo di rete che sia un \24 in quanto riesce a gestire un numero di host pari a (2^8)-2 = 254 indirizzi. In questo caso attribuiremo la rete 192.168.4.0\24.
-- Per la rete tra i due router usiamo una \30 in quanto si riescono a gestire (2^2)-2 = 2 indirizzi.
+- For the network of host-c I have to manage 348 addresses, for this reason I choosen a network mask \23 because it can manage a number of addresses equal to (2^9)-2 = 510. In this case I choosen the subnet 192.168.0.0\23.
+- For the network of host-b I have to manage 270 addresses, for this reason I choosen a network mask \23 because it can manage a number of addresses equal to (2^9)-2 = 510. In this case I choosen the subnet 192.168.2.0\23.
+- For the network of host-c I have to manage 214 addresses, for this reason I choosen a network mask \24 because it can manage a number of addresses equal to (2^8)-2 = 214. In this case I choosen the subnet 192.168.4.0\23.
+- For the network between the two routers I choosen \30 beacuse it can manage a number of addresses equal to (2^2)-2 = 2.
 
-## Configurazione IP
-Essendo che abbiamo due reti attaccate allo stesso switch dobbiamo far si che tale switch riesca a gestire entrabe le reti tramite delle VLANs e dobbiamo creare due porte nel router-1 che funzionino ognuna da broadcast, rispettivamente per ogni rete connessa ad esso. La porta dello switch che si collega con il router-1 sarà una trunk-port, essa riuscirà a gestire il traffico delle VLANs e indirizzare i pacchetti verso il router.
+## IP configuration
+Since I have two networks attached to the same switch, we must ensure that this switch is able to manage both networks through VLANs and I must create two ports in the router-1 that each work as a broadcast, respectively for each network connected to it. The switch port that is connects with the router-1 will be a trunk-port, it will be able to manage the traffic of the VLANs and direct the packets to the router.
 ```
 Router-1       10.1.1.1\30           enp0s9
 Router-2       10.1.1.2\30           enp0s9
@@ -145,19 +144,19 @@ Router-1       192.168.2.1\23        enp0s8.3
 Host-a         192.168.4.2\24        enp0s8
 Host-b         192.168.2.2\23        enp0s8
 ```
-## File vagrant
-Una volta aperto il vagrant file la prima cosa da modificare è il "path" di ogni componente come ad esempio: 
+## Vagrant file
+Once the vagrant file has been opened, the first thing to do is change the "path" of each component such as:
 ```
 router1.vm.provision "shell", path: "router-1.sh"
 ```
-Inoltre nell'host-c va aumentata la memoria del dispositivo facendola passare da 256 MB a 512 MB per poter far gigare la docker-image:
+Also in the host-c the memory of the device must be increased by passing it from 256 MB to 512 MB in order to put and run the docker-image:
 ```
 vb.memory = 512
 ```
-# Configurazione dispositivi
+# Device configuration
 
 ## Switch
-Nel file `switch.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte dello switch per i vari collegamenti, come ad esempio l'aggiunta della porta broadcast che collega tale dispositivo al router-1. Inoltre dobbiamo aggiungere le due porte per collegare le rispettive reti degli host-a e host-b. Il comando `sudo ip link set dev ...` farà si che tali porte siano attive nel momento in cui andremo ad effettuare il comando `vagrant up`.
+In the file `switch.sh` I have to insert lines of code to make sure that the switch ports are added for the different connections, such as adding the broadcast port that connects this device to the router-1. We also need to add the two ports to connect the respective networks of host-a and host-b. The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command.
 ```
 export DEBIAN_FRONTEND=noninteractive
 
@@ -174,8 +173,8 @@ sudo ip link set dev enp0s9 up
 sudo ip link set dev enp0s10 up
 ```
 ## Router-1
-Nel file `router-1.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte del router per i vari collegamenti con i rispettivi indirizzi ip. Inoltre dobbiamo far si che la porta che collega il router con le due reti sottostanti sia divisa in due parti per gestire entrambi i traffici con due indirizzi broadcast diversi, rispettivamente uno per la rete collegata all'host-a e l'altro per il collegamento con la rete dell'host-b. Per fare tutto ciò utilizzeremo i seguenti comandi: `sudo ip link add link enp0s8 name enp0s8.2 type vlan id 2`, `sudo ip link add link enp0s8 name enp0s8.3 type vlan id 3`.
-Il comando `sudo ip link set dev ...` farà si che tali porte siano attive nel momento in cui andremo ad effettuare il comando `vagrant up`. Infine bisogna creare la rotta statica per poter far si che dagli host-a e host-b si riesca a raggiungere l'host-c, il comando è il seguente: `sudo ip route add 192.168.0.0/23 via 10.1.1.2`.
+In the file `router-1.sh` I have to insert some lines of code to make sure that the router ports are added for the different connections with their respective ip addresses. Furthermore, we must ensure that the port that connects the router with the two underlying networks is divided into two parts to manage both traffic with two different gateway addresses, respectively one for the network connected to host-a and the other for the connection with the host-b. To do this we will use the following commands: `sudo ip link add link enp0s8 name enp0s8.2 type vlan id 2`,` sudo ip link add link enp0s8 name enp0s8.3 type vlan id 3`.
+The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command. Finally we need to create the static route to be able to reach host-c from host-a and host-b, the command is the following: `sudo ip route add 192.168.0.0/23 via 10.1.1.2` .
 ```
 export DEBIAN_FRONTEND=noninteractive
 #Startup commands go here
@@ -193,7 +192,7 @@ sudo ip route add 192.168.0.0/23 via 10.1.1.2
 ```
 
 ## Router-2
-Nel file `router-2.sh` dobbiamo inserire delle linee di codice per far si che siano aggiunte le porte del router per i vari collegamenti con i rispettivi indirizzi ip. Il comando `sudo ip link set dev ...` farà si che tali porte siano attive nel momento in cui andremo ad effettuare il comando `vagrant up`. Infine bisogna creare la rotta statica per poter far si che dall'host-c si riesca a raggiungere gli host-a e host-b, i comandi sono i seguenti: `sudo ip route add 192.168.4.0/24 via 10.1.1.1`, `sudo ip route add 192.168.2.0/23 via 10.1.1.1`.
+In the file `router-2.sh` I have to insert some lines of code to add the router ports for the different connections with their respective ip addresses. The command `sudo ip link set dev ...` will active these ports when we run the `vagrant up` command. Finally we need to create the static route to be able to reach host-a and host-b from host-c, the commands are as follows: `sudo ip route add 192.168.4.0/24 via 10.1.1.1` , `sudo ip route add 192.168.2.0/23 through 10.1.1.1`.
 ```
 export DEBIAN_FRONTEND=noninteractive
 #Startup commands go here
@@ -208,7 +207,7 @@ sudo ip route add 192.168.2.0/23 via 10.1.1.1
 ```
 
 ## Host-a
-Nel file `host-a.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione un host di un'altra rete venga invitato all'indirizzo corretto del router. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host.
+In the file `host-a.sh` I have to insert the commands to be able to insert the IP, to activate the port connected to the switch and finally to introduce the commands for the static routes, so that the packet targeting another network is sent to the correct router address. The command for this last operation is the following: `sudo ip route add [networkaddress\length] via [routeraddress]`, to be repeated for each network not directly connected to that host.
 ```
 export DEBIAN_FRONTEND=noninteractive
 # Startup commands go here
@@ -219,7 +218,7 @@ sudo ip route add 192.168.0.0/23 via 192.168.4.1
 sudo ip route add 192.168.2.0/23 via 192.168.4.1
 ```
 ## Host-b
-Nel file `host-b.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione un host di un'altra rete venga invitato all'indirizzo corretto del router. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host.
+In the file `host-b.sh` I have to insert the commands to be able to insert the IP, to activate the port connected to the switch and finally to introduce the commands for the static routes, so that the packet targeting another network is sent to the correct router address. The command for this last operation is the following: `sudo ip route add [networkaddress\length] via [routeraddress]`, to be repeated for each network not directly connected to that host.
 ```
 export DEBIAN_FRONTEND=noninteractive
 # Startup commands go here
@@ -230,7 +229,7 @@ sudo ip route add 192.168.0.0/23 via 192.168.2.1
 sudo ip route add 192.168.4.0/24 via 192.168.2.1
 ```
 ## Host-c
-Nel file `host-c.sh` dobbiamo inserire i comandi per poter attribuire l'indirizzo ip, per attivare la porta collegata allo switch ed infine introdurre i comandi per le rotte statiche, in modo che il pacchetto che ha come destinazione un host di un'altra rete venga invitato all'indirizzo corretto del router. Il comando per ques'ultima operazione è il seguente: `sudo ip route add [indirizzorete\lunghezza] via [indirizzorouter]`, da ripetere per ogni rete non direttamente connessa a tale host. Inoltre su questo host abbiamo aggiunto anche i comandi per installare ed attivare `docker.io` con il relativo `dustnic82/nginx-test`.
+In the file `host-c.sh` I have to insert the commands to be able to insert the IP, to activate the port connected to the switch and finally to introduce the commands for the static routes, so that the packet targeting another network is sent to the correct router address. The command for this last operation is the following: `sudo ip route add [networkaddress\length] via [routeraddress]`, to be repeated for each network not directly connected to that host. Also on this host we have also added commands to install and run `docker.io` with the related `dustnic82 / nginx-test`.
 ```
 export DEBIAN_FRONTEND=noninteractive
 # Startup commands go here
@@ -250,7 +249,7 @@ sudo docker pull dustnic82/nginx-test
 sudo docker run --name nginx -p 80:80 -d dustnic82/nginx-test
 ```
 ## Risultato finale
-Per capire se il tutto funziona, bisogna entrare in ogni host con il comando `vagrant ssh [nomehost]` e provare a pingare gli altri host con il comando `ping [indirizzohost]`. Infine entrando nell'host-a o nell'host-b, usiamo il comando `curl 192.168.0.2` che ci darà il seguente output.
+To see if this works, I need to log into each host with the command `vagrant ssh [hostname]` and try to ping the other hosts with the command `ping [hostaddress]`. Finally I entered into host-a or host-b, I used the command `curl 192.168.0.2` and this was the output:
 ```
 <!DOCTYPE html>
 <html>
